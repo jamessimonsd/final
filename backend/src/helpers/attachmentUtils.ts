@@ -12,16 +12,15 @@ export class AttachmentUtils {
     private readonly s3 = new XAWS.S3({ signatureVersion: 'v4' }),
     private readonly bucketName = s3BucketName
   ) {}
-  getAttachmentUrl(todoId: string): string {
-    return `https://${this.bucketName}.s3.amazonaws.com/${todoId}`
+  getAttachmentUrl(photoKey: string): string {
+    return `https://${this.bucketName}.s3.amazonaws.com/${photoKey}`
   }
 
-  getSignedUrl(todoId: string): Promise<string> {
+  getSignedUrl(Key: string): Promise<string> {
     return this.s3.getSignedUrlPromise('putObject', {
       Bucket: this.bucketName,
-      Key: todoId,
+      Key,
       Expires: urlExpiration
     })
   }
-  
 }

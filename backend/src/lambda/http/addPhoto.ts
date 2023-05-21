@@ -1,5 +1,6 @@
 import 'source-map-support/register'
 
+import * as uuid from 'uuid'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as AWS from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk'
@@ -16,32 +17,24 @@ const s3 = new XAWS.S3({
 
 import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
-import { TodoAccess } from '../../dataLayer/todoDB'
 import { getUserId } from '../utils'
+import { addPhoto } from '../../businessLogic/photos'
 
-const todoAccess = new TodoAccess()
 const logger = createLogger('generateUploadUrl')
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const todoId = event.pathParameters.todoId
-
-    logger.info('Generating upload URL:', {
-      todoId
-    })
     const userId = getUserId(event)
-
+    const Key = uuid.v4()
     const uploadUrl = s3.getSignedUrl('putObject', {
       Bucket: bucketName,
-      Key: todoId,
+      Key,
       Expires: urlExpiration
     })
-    logger.info('Generating upload URL:', {
-      todoId,
+    logger.info('Generated upload URL:', {
       uploadUrl
     })
-
-    await todoAccess.saveImgUrl(userId, todoId, bucketName)
+    const userPhoto = await addPhoto(userId, Key)
 
     return {
       statusCode: 200,
@@ -49,7 +42,8 @@ export const handler = middy(
         'Access-Control-Allow-Origin': '*'
       },
       body: JSON.stringify({
-        uploadUrl: uploadUrl
+        uploadUrl,
+        userPhoto
       })
     }
   }

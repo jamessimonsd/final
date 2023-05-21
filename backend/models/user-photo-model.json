@@ -3,16 +3,16 @@
   "title": "group",
   "type": "object",
   "properties": {
-    "name": {
+    "userId": {
       "type": "string"
     },
-    "dueDate": {
+    "photoUrl": {
+      "type": "string"
+    },
+    "photoKey": {
       "type": "string"
     }
   },
-  "required": [
-    "name",
-    "dueDate"
-  ],
+  "required": ["userId", "photoUrl", "photoKey"],
   "additionalProperties": false
 }

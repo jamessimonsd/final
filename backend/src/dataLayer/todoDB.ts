@@ -2,97 +2,68 @@ import * as AWS from 'aws-sdk'
 const AWSXRay = require('aws-xray-sdk')
 import { createLogger } from '../utils/logger'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-import { TodoItem } from '../models/TodoItem'
-import { TodoUpdate } from '../models/TodoUpdate'
+import { UserPhoto } from '../models/UserPhoto'
 
 const XAWS = AWSXRay.captureAWS(AWS)
-const logger = createLogger('todoAccess')
+const logger = createLogger('photoAccess')
 
-export class TodoAccess {
+export class PhotoAccess {
   constructor(
     private readonly docClient: DocumentClient = new XAWS.DynamoDB.DocumentClient(),
-    private readonly todosTable = process.env.TODOS_TABLE
+    private readonly photosTable = process.env.PHOTOS_TABLE
   ) {}
 
-  async getTodos(userId: string): Promise<TodoItem[]> {
-    logger.info('Getting all todo items')
-
-    const result = await this.docClient
-      .query({
-        TableName: this.todosTable,
-        KeyConditionExpression: 'userId = :userId',
-        ExpressionAttributeValues: {
-          ':userId': userId
-        }
-      })
-      .promise()
-    return result.Items as TodoItem[]
-  }
-
-  async createTodo(newTodo: TodoItem): Promise<TodoItem> {
-    logger.info(`Creating new todo item: ${newTodo.todoId}`)
-    await this.docClient
-      .put({
-        TableName: this.todosTable,
-        Item: newTodo
-      })
-      .promise()
-    return newTodo
-  }
-
-  async updateTodo(
-    userId: string,
-    todoId: string,
-    updateData: TodoUpdate
-  ): Promise<void> {
-    logger.info(`Updating a todo item: ${todoId}`)
-    await this.docClient
-      .update({
-        TableName: this.todosTable,
-        Key: { userId, todoId },
-        ConditionExpression: 'attribute_exists(todoId)',
-        UpdateExpression: 'set #n = :n, dueDate = :due, done = :dn',
-        ExpressionAttributeNames: { '#n': 'name' },
-        ExpressionAttributeValues: {
-          ':n': updateData.name,
-          ':due': updateData.dueDate,
-          ':dn': updateData.done
-        }
-      })
-      .promise()
-  }
-
-  async deleteTodo(userId: string, todoId: string): Promise<void> {
-    await this.docClient
-      .delete({
-        TableName: this.todosTable,
-        Key: { userId, todoId }
-      })
-      .promise()
-  }
-
-  async saveImgUrl(
-    userId: string,
-    todoId: string,
-    bucketName: string
-  ): Promise<void> {
+  async getTodos(userId: string): Promise<UserPhoto[]> {
     try {
-      await this.docClient
-        .update({
-          TableName: this.todosTable,
-          Key: { userId, todoId },
-          ConditionExpression: 'attribute_exists(todoId)',
-          UpdateExpression: 'set attachmentUrl = :attachmentUrl',
+      logger.info('Getting all photos for user', userId)
+      const result = await this.docClient
+        .query({
+          TableName: this.photosTable,
+          KeyConditionExpression: 'userId = :userId',
           ExpressionAttributeValues: {
-            ':attachmentUrl': `https://${bucketName}.s3.amazonaws.com/${todoId}`
+            ':userId': userId
           }
         })
         .promise()
-      logger.info(
-        `Updating image url for a todo item: https://${bucketName}.s3.amazonaws.com/${todoId}`
-      )
+      logger.info('Getting all photos for user successfully', userId, result)
+
+      return result.Items as UserPhoto[]
     } catch (error) {
-      logger.error(error)
+      logger.error('Failed to get all photos for user', error, userId)
+    }
+  }
+
+  async deleteTodo(userId: string, photoKey: string): Promise<void> {
+    try {
+      logger.info('Deleting a photo for user', userId, photoKey)
+      await this.docClient
+        .delete({
+          TableName: this.photosTable,
+          Key: { userId, photoKey }
+        })
+        .promise()
+      logger.info(`photo ${photoKey} deleted for user`, userId)
+    } catch (error) {
+      logger.error('Failed to delete photo', error, userId, photoKey)
+    }
+  }
+
+  async savePhoto(uesrPhotoDto: UserPhoto): Promise<UserPhoto> {
+    try {
+      logger.info('Saving a photo for user', uesrPhotoDto)
+
+      await this.docClient
+        .put({
+          TableName: this.photosTable,
+          Item: uesrPhotoDto
+        })
+        .promise()
+      logger.info('Saving a photo for user successfully', uesrPhotoDto)
+
+      return uesrPhotoDto
+    } catch (error) {
+      logger.error('Failed to save a photo for user', error, uesrPhotoDto)
+      return null
     }
   }
 }
