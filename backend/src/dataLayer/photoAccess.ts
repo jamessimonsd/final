@@ -2,7 +2,7 @@ import * as AWS from 'aws-sdk'
 const AWSXRay = require('aws-xray-sdk')
 import { createLogger } from '../utils/logger'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-import { UserPhoto } from '../models/UserPhoto'
+import { UserPhoto } from '../models/userPhoto'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 const logger = createLogger('photoAccess')

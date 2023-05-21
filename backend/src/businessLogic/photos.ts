@@ -1,5 +1,4 @@
-import * as uuid from 'uuid'
-import { PhotoAccess } from '../dataLayer/todoDB'
+import { PhotoAccess } from '../dataLayer/photoAccess'
 import { createLogger } from '../utils/logger'
 import { AttachmentUtils } from '../helpers/attachmentUtils'
 
