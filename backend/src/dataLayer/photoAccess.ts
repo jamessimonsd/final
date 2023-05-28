@@ -13,7 +13,7 @@ export class PhotoAccess {
     private readonly photosTable = process.env.PHOTOS_TABLE
   ) {}
 
-  async getTodos(userId: string): Promise<UserPhoto[]> {
+  async getPhotos(userId: string): Promise<UserPhoto[]> {
     try {
       logger.info('Getting all photos for user', userId)
       const result = await this.docClient
@@ -56,6 +56,37 @@ export class PhotoAccess {
         .put({
           TableName: this.photosTable,
           Item: uesrPhotoDto
+        })
+        .promise()
+      logger.info('Saving a photo for user successfully', uesrPhotoDto)
+
+      return uesrPhotoDto
+    } catch (error) {
+      logger.error('Failed to save a photo for user', error, uesrPhotoDto)
+      return null
+    }
+  }
+
+  async editPhoto(uesrPhotoDto: {
+    userId: string
+    photoKey: string
+    photoName: string
+  }): Promise<{ userId: string; photoKey: string; photoName: string }> {
+    try {
+      logger.info('Saving a photo for user', uesrPhotoDto)
+
+      await this.docClient
+        .update({
+          TableName: this.photosTable,
+          Key: {
+            userId: uesrPhotoDto.userId,
+            photoKey: uesrPhotoDto.photoKey
+          },
+          UpdateExpression: 'set #n = :n',
+          ExpressionAttributeNames: { '#n': 'photoName' },
+          ExpressionAttributeValues: {
+            ':n': uesrPhotoDto.photoName
+          }
         })
         .promise()
       logger.info('Saving a photo for user successfully', uesrPhotoDto)

@@ -3,16 +3,10 @@
   "title": "group",
   "type": "object",
   "properties": {
-    "userId": {
-      "type": "string"
-    },
-    "photoUrl": {
-      "type": "string"
-    },
-    "photoKey": {
+    "photoName": {
       "type": "string"
     }
   },
-  "required": ["userId", "photoUrl", "photoKey"],
+  "required": ["photoName"],
   "additionalProperties": false
 }

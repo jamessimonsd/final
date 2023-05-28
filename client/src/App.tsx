@@ -3,10 +3,12 @@ import { Link, Route, Router, Switch } from 'react-router-dom'
 import { Grid, Menu, Segment } from 'semantic-ui-react'
 
 import Auth from './auth/Auth'
-import { EditTodo } from './components/EditTodo'
+import AddPhoto from './components/AddPhoto'
+import EditPhoto from './components/EditPhoto'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
-import { Todos } from './components/Photos'
+import Photos from './components/Photos'
+import ViewPhoto from './components/ViewPhoto'
 
 export interface AppProps {}
 
@@ -88,21 +90,18 @@ export default class App extends Component<AppProps, AppState> {
 
     return (
       <Switch>
-        <Route
-          path="/"
-          exact
-          render={(props) => {
-            return <Todos {...props} auth={this.props.auth} />
-          }}
-        />
-
-        <Route
-          path="/photos/add"
-          exact
-          render={(props) => {
-            return <EditTodo {...props} auth={this.props.auth} />
-          }}
-        />
+        <Route path="/" exact>
+          <Photos auth={this.props.auth} />
+        </Route>
+        <Route path="/photos/add" exact>
+          <AddPhoto auth={this.props.auth} />
+        </Route>
+        <Route path="/photos/edit/:photoId" exact>
+          <EditPhoto idToken={this.props.auth.idToken} />
+        </Route>
+        <Route path="/photos/:photoId" exact>
+          <ViewPhoto />
+        </Route>
 
         <Route component={NotFound} />
       </Switch>

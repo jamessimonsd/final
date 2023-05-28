@@ -9,7 +9,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
 
@@ -68,9 +68,6 @@ functions:
           path: photos
           cors: true
           authorizer: Auth
-          request:
-            schemas:
-              application/json: ${file(models/user-photo-model.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -81,6 +78,28 @@ functions:
           - xray:PutTraceSegments
         Resource:
           - '*'
+  EditPhoto:
+    handler: src/lambda/http/editPhoto.handler
+    events:
+      - http:
+          method: put
+          path: photos/{photoKey}
+          cors: true
+          authorizer: Auth
+          request:
+            schemas:
+              application/json: ${file(models/update-photo-model.json)}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PHOTOS_TABLE}
+      - Effect: Allow
+        Action:
+          - xray:PutTraceSegments
+        Resource:
+          - '*'
+
   DeletePhoto:
     handler: src/lambda/http/deletePhoto.handler
     events:
@@ -157,3 +176,18 @@ resources:
                 - DELETE
                 - HEAD
               MaxAge: 3000
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: UdacityServerlessTodo
+          Version: '2012-10-17'
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource: 'arn:aws:s3:::${self:provider.environment.S3_BUCKET}/*'
+        Bucket: !Ref AttachmentsBucket

@@ -2,29 +2,31 @@ import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 
-import { cors, httpErrorHandler } from 'middy/middlewares'
 import * as middy from 'middy'
-import { deleteTodo } from '../../businessLogic/photos'
+import { cors } from 'middy/middlewares'
 import { getUserId } from '../utils'
+import { editPhoto } from '../../businessLogic/photos'
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const photoId = event.pathParameters.photoId
     const userId = getUserId(event)
+    const photoKey = event.pathParameters.photoKey
+    const body: { photoName: string } = JSON.parse(event.body)
 
-    await deleteTodo(userId, photoId)
+    const userPhoto = await editPhoto(userId, photoKey, body.photoName)
 
     return {
-      statusCode: 202,
+      statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*'
       },
-      body: JSON.stringify({})
+      body: JSON.stringify({
+        userPhoto
+      })
     }
   }
 )
-
-handler.use(httpErrorHandler()).use(
+handler.use(
   cors({
     credentials: true
   })
