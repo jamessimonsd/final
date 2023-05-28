@@ -73,7 +73,7 @@ export class PhotoAccess {
     photoName: string
   }): Promise<{ userId: string; photoKey: string; photoName: string }> {
     try {
-      logger.info('Saving a photo for user', uesrPhotoDto)
+      logger.info('Editing a photo for user', uesrPhotoDto)
 
       await this.docClient
         .update({
@@ -89,7 +89,7 @@ export class PhotoAccess {
           }
         })
         .promise()
-      logger.info('Saving a photo for user successfully', uesrPhotoDto)
+      logger.info('Editing a photo for user successfully', uesrPhotoDto)
 
       return uesrPhotoDto
     } catch (error) {

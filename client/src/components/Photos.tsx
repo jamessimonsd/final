@@ -22,7 +22,7 @@ const Photos = ({ auth }) => {
           <div
             key={photo.photoKey}
             onClick={() => {
-              history.push(`/photos/${photo.photoKey}`)
+              history.push(`/photos/edit/${photo.photoKey}`)
             }}
             style={{ cursor: 'pointer' }}
           >

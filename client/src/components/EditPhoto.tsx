@@ -4,6 +4,7 @@ import { editPhoto } from '../api/photos-api'
 
 const EditPhoto = ({ idToken }: { idToken: string }) => {
   const params = useParams<{ photoKey: string }>()
+  console.log(params)
   const [photoName, setPhotoName] = React.useState('')
   const history = useHistory()
   function handleEditPhoto() {

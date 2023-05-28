@@ -8,7 +8,6 @@ import EditPhoto from './components/EditPhoto'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
 import Photos from './components/Photos'
-import ViewPhoto from './components/ViewPhoto'
 
 export interface AppProps {}
 
@@ -96,11 +95,8 @@ export default class App extends Component<AppProps, AppState> {
         <Route path="/photos/add" exact>
           <AddPhoto auth={this.props.auth} />
         </Route>
-        <Route path="/photos/edit/:photoId" exact>
+        <Route path="/photos/edit/:photoKey" exact>
           <EditPhoto idToken={this.props.auth.idToken} />
-        </Route>
-        <Route path="/photos/:photoId" exact>
-          <ViewPhoto />
         </Route>
 
         <Route component={NotFound} />
