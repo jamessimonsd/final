@@ -15,26 +15,35 @@ const Photos = ({ auth }) => {
   }, [auth.idToken])
   return (
     <div>
-      Photos:
+      <h1> Photos:</h1>
+      <h3>Click on a photo to start editing its name</h3>
       {!!loading && <p>Loading...</p>}
-      {photos.map((photo) => {
-        return (
-          <div
-            key={photo.photoKey}
-            onClick={() => {
-              history.push(`/photos/edit/${photo.photoKey}`)
-            }}
-            style={{ cursor: 'pointer' }}
-          >
-            <img
-              width={300}
-              height={300}
-              src={photo.photoUrl}
-              alt={photo.photoKey}
-            />
-          </div>
-        )
-      })}
+      <div>
+        {photos.map((photo) => {
+          return (
+            <>
+              <div
+                key={photo.photoKey}
+                onClick={() => {
+                  history.push(`/photos/edit/${photo.photoKey}`)
+                }}
+                style={{
+                  cursor: 'pointer',
+                  marginBottom: '3rem'
+                }}
+              >
+                <img
+                  width={300}
+                  height={300}
+                  src={photo.photoUrl}
+                  alt={photo.photoName}
+                />
+              </div>{' '}
+              <p> {photo.photoName}</p>
+            </>
+          )
+        })}
+      </div>
       <div>
         <button onClick={() => history.push('/photos/add')}>Add a photo</button>
       </div>

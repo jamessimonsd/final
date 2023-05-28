@@ -4,7 +4,8 @@
   "type": "object",
   "properties": {
     "photoName": {
-      "type": "string"
+      "type": "string",
+      "minLength": 3
     }
   },
   "required": ["photoName"],
