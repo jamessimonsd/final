@@ -17,9 +17,9 @@ export async function getPhotos(idToken: string): Promise<Photo[]> {
 
 export async function deletePhoto(
   idToken: string,
-  photoId: string
+  photoKey: string
 ): Promise<void> {
-  await Axios.delete(`${apiEndpoint}/photos/${photoId}`, {
+  await Axios.delete(`${apiEndpoint}/photos/${photoKey}`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${idToken}`

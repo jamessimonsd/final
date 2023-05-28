@@ -9,10 +9,10 @@ import { getUserId } from '../utils'
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const photoId = event.pathParameters.photoId
+    const photoKey = event.pathParameters.photoKey
     const userId = getUserId(event)
 
-    await deleteTodo(userId, photoId)
+    await deleteTodo(userId, photoKey)
 
     return {
       statusCode: 202,
